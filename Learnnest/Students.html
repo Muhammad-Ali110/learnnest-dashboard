@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Students - LearnNest</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+
+  <style>
+        body {
+      background-color: #000;
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+    }
+    .sidebar {
+      height: 100vh;
+      background-color: #0a0a0a;
+      padding: 20px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 240px;
+      overflow-y: auto;
+      transition: transform 0.3s ease-in-out;
+      z-index: 1000;
+    }
+    .sidebar h2 {
+      font-size: 1.2rem;
+      color: deepskyblue;
+      margin-bottom: 30px;
+    }
+    .sidebar a {
+      display: block;
+      padding: 10px 15px;
+      margin-bottom: 10px;
+      text-decoration: none;
+      color: #ccc;
+      border-radius: 10px;
+    }
+    .sidebar a:hover {
+      background-color: black;
+      color: deepskyblue;
+      box-shadow: inset 0 0 10px deepskyblue;
+    }
+    .sidebar a.active {
+      background-color: deepskyblue;
+      color: #fff;
+      font-weight: bold;
+    }
+
+    .main {
+      margin-left: 250px;
+      padding: 2rem;
+    }
+
+    .text-muted {
+      color: #aaa !important;
+    }
+    .table td, .table th {
+      vertical-align: middle;
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      .main {
+        margin-left: 0;
+      }
+    }
+
+    /* Add this to your existing style section */
+.sortable-header {
+  position: relative;
+  transition: color 0.2s ease;
+}
+
+.sortable-header:hover {
+  color: deepskyblue !important;
+}
+
+.active-sort {
+  color: deepskyblue !important;
+  font-weight: bold;
+}
+
+.sort-icon {
+  font-size: 0.8em;
+}
+
+/* Theme-specific styles */
+[data-bs-theme="light"] {
+  --bs-body-bg: #f8f9fa;
+  --bs-body-color: #212529;
+}
+
+[data-bs-theme="light"] .sidebar {
+  background-color: #f8f9fa !important;
+  color: #212529;
+}
+
+[data-bs-theme="light"] .sidebar a {
+  color: #495057;
+}
+
+[data-bs-theme="light"] .sidebar a:hover {
+  background-color: #e9ecef !important;
+  color: #0d6efd !important;
+  box-shadow: inset 0 0 10px rgba(13, 110, 253, 0.3) !important;
+}
+
+[data-bs-theme="light"] .sidebar a.active {
+  background-color: #0d6efd !important;
+  color: white !important;
+}
+
+[data-bs-theme="light"] .table {
+  --bs-table-bg: #fff;
+  --bs-table-color: #212529;
+}
+
+[data-bs-theme="light"] .modal-content {
+  background-color: #fff;
+  color: #212529;
+}
+
+[data-bs-theme="light"] .text-muted {
+  color: #6c757d !important;
+}
+
+[data-bs-theme="light"] .btn-outline-light {
+  color: #212529;
+  border-color: #dee2e6;
+}
+
+[data-bs-theme="light"] .btn-outline-light:hover {
+  color: #212529;
+  background-color: #f8f9fa;
+}
+  </style>
+</head>
+<body>
+
+  <iframe src="ultra-loader.html" style="border:0;position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999;" frameborder="0"></iframe>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h2>LearnNest by Technify</h2>
+    <a href="Dashboard-Home.html"><i class="fas fa-chart-line"></i> Dashboard</a>
+    <a href="My-Courses.html"><i class="fas fa-book"></i> My Courses</a>
+    <a href="Create-Course.html"><i class="fas fa-plus-square"></i> Create Course</a>
+    <a href="Students.html" class="active"><i class="fas fa-user-graduate"></i> Students</a>
+    <a href="Earnings.html"><i class="fas fa-wallet"></i> Earnings</a>
+    <a href="Profile.html"><i class="fas fa-user"></i> Profile</a>
+    <a href="Settings.html"><i class="fas fa-cog"></i> Settings</a>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main">
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+      <h2 class="text-info mb-0">Enrolled Students</h2>
+      <div class="d-flex gap-2 mt-2 mt-md-0">
+        <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#addStudentModal">
+          <i class="fas fa-plus"></i> Add Student
+        </button>
+        <button class="btn btn-outline-light btn-sm" onclick="loadStudents()">
+          <i class="fas fa-sync"></i> Reload
+        </button>
+      </div>
+    </div>
+
+    <!-- Filter + Search + Pagination Controls -->
+    <div class="row mb-3 g-2">
+      <div class="col-md-3 col-6">
+        <label class="form-label small text-secondary mb-1">Show Rows</label>
+        <select id="studentsPerPage" class="form-select form-select-sm bg-dark text-light border-secondary">
+          <option value="5">5</option>
+          <option value="10" selected>10</option>
+          <option value="25">25</option>
+        </select>
+      </div>
+      <div class="col-md-4 col-6">
+        <label class="form-label small text-secondary mb-1">Filter by Course</label>
+        <select id="courseFilter" class="form-select form-select-sm bg-dark text-light border-secondary">
+          <option value="">All Courses</option>
+          <!-- options populated by JS -->
+        </select>
+      </div>
+      <div class="col-md-5 col-12">
+        <label class="form-label small text-secondary mb-1">Search</label>
+        <input type="text" id="studentSearch" class="form-control form-control-sm bg-dark text-light border-secondary" placeholder="Search name or email..."/>
+      </div>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-dark table-striped table-hover align-middle">
+        <thead class="text-uppercase small text-secondary">
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Course</th>
+            <th>Enrolled On</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="studentsTableBody">
+          <tr>
+            <td colspan="6" class="text-center text-muted">Loading...</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="d-flex justify-content-end pt-2">
+        <div id="studentsPagination" class="btn-group btn-group-sm"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Student Modal -->
+  <div class="modal fade" id="addStudentModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content bg-dark text-light rounded-4">
+        <form id="addStudentForm">
+          <div class="modal-header border-0">
+            <h5 class="modal-title text-info">Enroll Student with Payment</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md-6">
+                <h6 class="text-info mb-3">Student Information</h6>
+                <div class="mb-3">
+                  <label class="form-label">Full Name</label>
+                  <input type="text" class="form-control" id="studentName" required>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Email</label>
+                  <input type="email" class="form-control" id="studentEmail" required>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <h6 class="text-info mb-3">Course & Payment</h6>
+                <div class="mb-3">
+                  <label class="form-label">Select Course</label>
+                  <select class="form-select" id="studentCourse" required>
+                    <option value="">Select a course</option>
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Course Price</label>
+                  <input type="text" class="form-control" id="coursePrice" readonly>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Payment Method</label>
+                  <select class="form-select" id="paymentMethod" required>
+                    <option value="">Select method</option>
+                    <option value="credit_card">Credit Card</option>
+                    <option value="paypal">PayPal</option>
+                    <option value="bank_transfer">Bank Transfer</option>
+                    <option value="crypto">Crypto</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer border-0">
+            <button type="submit" class="btn btn-info">Enroll & Process Payment</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Student Modal -->
+  <div class="modal fade" id="editStudentModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content bg-dark text-light rounded-4">
+        <form id="editStudentForm">
+          <div class="modal-header border-0">
+            <h5 class="modal-title text-info">Edit Student</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="editStudentId">
+            <div class="mb-3">
+              <label class="form-label">Name</label>
+              <input type="text" class="form-control" id="editStudentName" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Email</label>
+              <input type="email" class="form-control" id="editStudentEmail" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Course</label>
+              <select id="editCourseId" class="form-select" required>
+                <!-- Options populated dynamically -->
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer border-0">
+            <button type="submit" class="btn btn-info">Update Student</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
+    <div id="toast" class="toast bg-dark text-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body" id="toastMessage">This is a toast</div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap + Custom JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="students.js"></script>
+  <script>
+    function toggleSidebar() {
+      document.getElementById("sidebar").classList.toggle("open");
+    }
+  </script>
+</body>
+</html>
+
+

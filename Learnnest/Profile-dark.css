@@ -1,0 +1,56 @@
+    .avatar-preview {
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+    }
+
+    .avatar-glow {
+      box-shadow: 0 0 10px rgba(0, 170, 255, 0.6);
+    }
+    
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: #198754;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      z-index: 9999;
+      opacity: 0;
+      transition: opacity 0.5s ease-in-out;
+    }
+    
+    .toast.show {
+      opacity: 1;
+    }
+    
+    .profile-stats .card {
+      transition: transform 0.3s ease;
+    }
+    
+    .profile-stats .card:hover {
+      transform: translateY(-5px);
+    }
+    
+    #profileBio {
+      background-color: rgba(0, 191, 255, 0.1);
+      border-left: 3px solid deepskyblue;
+      padding: 10px;
+      border-radius: 0 5px 5px 0;
+    }
+
+    .loader {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #3498db;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
